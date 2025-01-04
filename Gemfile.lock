@@ -91,6 +91,7 @@ GEM
     autoprefixer-rails (10.4.19.0)
       execjs (~> 2)
     base64 (0.2.0)
+    bcrypt (3.1.20)
     benchmark (0.4.0)
     bigdecimal (3.1.9)
     bindex (0.8.1)
@@ -144,6 +145,8 @@ GEM
     jbuilder (2.13.0)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    jwt (2.10.1)
+      base64
     logger (1.6.4)
     loofah (2.24.0)
       crass (~> 1.0.2)
@@ -284,6 +287,7 @@ PLATFORMS
 
 DEPENDENCIES
   autoprefixer-rails
+  bcrypt (~> 3.1.7)
   bootsnap
   bootstrap (~> 5.2)
   capybara
@@ -293,6 +297,7 @@ DEPENDENCIES
   font-awesome-sass (~> 6.1)
   importmap-rails
   jbuilder
+  jwt
   pg (~> 1.1)
   puma (>= 5.0)
   rails (~> 7.1.5, >= 7.1.5.1)

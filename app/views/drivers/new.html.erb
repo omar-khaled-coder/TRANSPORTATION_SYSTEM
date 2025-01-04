@@ -1,0 +1,19 @@
+<h2>Login</h2>
+
+<%= form_with url: driver_session_path, method: :post, local: true do |form| %>
+  <div>
+    <%= form.label :email %>
+    <%= form.email_field :email, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :password %>
+    <%= form.password_field :password, required: true %>
+  </div>
+
+  <div>
+    <%= form.submit 'Login', class: 'btn btn-primary' %>
+  </div>
+<% end %>
+<p>Don't have an account?</p>
+<%= link_to 'Sign Up', new_driver_registration_path %>
