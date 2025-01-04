@@ -8,4 +8,14 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+   # Driver login and logout routes
+   get 'drivers/login', to: 'drivers#new', as: :new_driver_session
+   post 'drivers/login', to: 'drivers#login', as: :driver_session
+   delete 'drivers/logout', to: 'drivers#destroy', as: :destroy_driver_session
+
+    # Driver signup route
+    get 'drivers/signup', to: 'drivers#signup', as: :new_driver_registration
+    post 'drivers', to: 'drivers#create', as: :drivers
+
+
 end
