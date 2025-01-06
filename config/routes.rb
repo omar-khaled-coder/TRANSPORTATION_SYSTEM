@@ -17,5 +17,6 @@ Rails.application.routes.draw do
     get 'drivers/signup', to: 'drivers#signup', as: :new_driver_registration
     post 'drivers', to: 'drivers#create', as: :drivers
 
+    resources :trucks, only: [:index]
 
 end

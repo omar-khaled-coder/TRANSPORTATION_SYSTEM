@@ -1,0 +1,31 @@
+<h1>All Trucks</h1>
+
+<% if @trucks.present? %>
+  <% @trucks.each do |truck| %>
+    <div class="truck">
+      <h2><%= truck['name'] %></h2>
+      <p>Type: <%= truck['truck_type'] %></p>
+
+      <% if truck['image_url'].present? %>
+        <img src="<%= truck['image_url'] %>" alt="<%= truck['name'] %> image" />
+      <% else %>
+        <p>No image available</p>
+      <% end %>
+
+      <p>Created at: <%= truck['created_at'] %></p>
+      <p>Updated at: <%= truck['updated_at'] %></p>
+    </div>
+  <% end %>
+
+  <div class="pagination">
+    <% if @current_page.to_i > 1 %>
+      <%= link_to 'Previous', trucks_path(page: @current_page.to_i - 1) %>
+    <% end %>
+
+    <% if @current_page.to_i < @total_pages.to_i %>
+      <%= link_to 'Next', trucks_path(page: @current_page.to_i + 1) %>
+    <% end %>
+  </div>
+<% else %>
+  <p>No trucks available.</p>
+<% end %>
