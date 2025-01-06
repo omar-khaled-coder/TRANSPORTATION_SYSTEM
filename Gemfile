@@ -76,3 +76,6 @@ group :test do
 end
 gem 'bcrypt', '~> 3.1.7'
 gem 'jwt'
+gem 'sidekiq'
+gem 'pagy'
+gem 'whenever', require: false
