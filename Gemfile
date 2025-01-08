@@ -79,3 +79,4 @@ gem 'jwt'
 gem 'sidekiq'
 gem 'pagy'
 gem 'whenever', require: false
+gem 'jsonapi-serializer'
