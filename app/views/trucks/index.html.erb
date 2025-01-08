@@ -1,3 +1,19 @@
+<h1>Assigned Trucks</h1>
+
+<% if @assigned_trucks.any? %>
+  <ul>
+    <% @assigned_trucks.each do |drivers_truck| %>
+      <li>
+        <%= drivers_truck.truck.name %> (<%= drivers_truck.truck.truck_type %>) - Assigned on:
+        <%= drivers_truck.assigned_date.present? ? drivers_truck.assigned_date.strftime("%B %d, %Y") : "Not assigned yet" %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>You have no trucks assigned to you.</p>
+<% end %>
+
+
 <h1>All Trucks</h1>
 
 <% if @trucks.present? %>
@@ -14,6 +30,16 @@
 
       <p>Created at: <%= truck['created_at'] %></p>
       <p>Updated at: <%= truck['updated_at'] %></p>
+<%= form_with url: assign_truck_path(truck['id']), method: :post, local: true do %>
+  <%= hidden_field_tag :driver_token, session[:driver_token] %>
+  <%= hidden_field_tag :truck_id, truck['id'] %>
+  <%= hidden_field_tag :assigned_date, DateTime.now.to_s %>  <!-- Directly pass assigned_date -->
+  <%= submit_tag 'Assign to this truck', class: 'btn btn-primary' %>
+<% end %>
+
+
+
+
     </div>
   <% end %>
 
@@ -28,4 +54,9 @@
   </div>
 <% else %>
   <p>No trucks available.</p>
+<% end %>
+<% if flash[:notice] %>
+  <div class="alert alert-success">
+    <%= flash[:notice] %>
+  </div>
 <% end %>

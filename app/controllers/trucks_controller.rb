@@ -3,45 +3,73 @@ require 'json'
 class TrucksController < ApplicationController
   before_action :authorize_driver, except: [:index]
   def index
-    # Base URL for the API endpoint
-    url = URI('https://api-task-bfrm.onrender.com/api/v1/trucks')
+    @driver = current_driver
+    # Corrected query to join drivers_trucks and trucks, ensuring truck_id is included
+    @assigned_trucks = @driver.drivers_trucks.joins(:truck)
+                                         .select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type, drivers_trucks.truck_id')
 
-    # Initialize HTTP request object
+    # Fetching all trucks from the API
+    url = URI('https://api-task-bfrm.onrender.com/api/v1/trucks')
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true if url.scheme == 'https'
-
-    # Initialize the request and set headers
     request = Net::HTTP::Get.new(url)
-    request['API_KEY'] = 'illa-trucks-2023'  # Add the API key here
-
-    # Send the request
+    request['API_KEY'] = 'illa-trucks-2023'
     response = http.request(request)
 
     if response.is_a?(Net::HTTPSuccess)
       trucks_data = JSON.parse(response.body)
-      @trucks = trucks_data
-
-      # Pagination headers from the response
-      @current_page = response['current-page']
-      @page_items = response['page-items']
-      @total_count = response['total-count']
-      @total_pages = response['total-pages']
+      trucks_data.each do |truck_data|
+        Truck.find_or_create_by(name: truck_data['name']) do |truck|
+          truck.truck_type = truck_data['truck_type']
+        end
+      end
+      @trucks = Truck.all
     else
-      @trucks = []
-      @current_page = @page_items = @total_count = @total_pages = 0
+      flash[:alert] = 'Unexpected API response structure.'
+      @trucks = Truck.all
     end
+
+    @driver_token = session[:driver_token] || params[:driver_token]
   end
 
-  def assign
-    truck = Truck.find(params[:id])
-    current_driver.trucks << truck unless current_driver.trucks.include?(truck)
-    render json: { message: "Truck assigned successfully" }, status: :ok
-  end
 
   def assigned_trucks
     trucks = current_driver.trucks
     render json: { data: trucks.map { |truck| format_truck(truck) } }
   end
+
+  def assign
+    driver = current_driver
+    if driver.nil?
+      redirect_to trucks_path, alert: 'Invalid or missing driver token.'
+      return
+    end
+
+    truck_id = params[:truck_id]
+    assigned_date = params[:assigned_date] # Get the assigned date from the form
+    if truck_id.present? && assigned_date.present?
+      truck = Truck.find_by(id: truck_id)
+      if truck
+        # Ensure the driver has the truck and set the assigned date
+        driver_truck = DriversTruck.find_or_initialize_by(driver_id: driver.id, truck_id: truck.id)
+        driver_truck.assigned_date = assigned_date # Set the assigned date directly
+        if driver_truck.save
+          redirect_to trucks_path, notice: "Truck #{truck.name} successfully assigned to #{driver.email}."
+        else
+          redirect_to trucks_path, alert: "Failed to assign the truck."
+        end
+      else
+        redirect_to trucks_path, alert: 'Truck not found.'
+      end
+    else
+      redirect_to trucks_path, alert: 'Truck ID or assigned date is missing.'
+    end
+  end
+
+
+
+
+
 
   private
 
@@ -54,9 +82,10 @@ class TrucksController < ApplicationController
     }
   end
 
-  def current_driver
-    @current_driver ||= Driver.find(JsonWebToken.decode(request.headers['Authorization'])[:driver_id])
-  end
+
+
+
+
 
   def authorize_driver
     render json: { error: 'Unauthorized' }, status: :unauthorized unless current_driver
