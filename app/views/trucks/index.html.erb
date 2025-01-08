@@ -30,33 +30,54 @@
 
       <p>Created at: <%= truck['created_at'] %></p>
       <p>Updated at: <%= truck['updated_at'] %></p>
-<%= form_with url: assign_truck_path(truck['id']), method: :post, local: true do %>
-  <%= hidden_field_tag :driver_token, session[:driver_token] %>
-  <%= hidden_field_tag :truck_id, truck['id'] %>
-  <%= hidden_field_tag :assigned_date, DateTime.now.to_s %>  <!-- Directly pass assigned_date -->
-  <%= submit_tag 'Assign to this truck', class: 'btn btn-primary' %>
-<% end %>
 
-
-
+      <%= form_with url: assign_truck_path(truck['id']), method: :post, local: true do %>
+        <%= hidden_field_tag :driver_token, session[:driver_token] %>
+        <%= hidden_field_tag :truck_id, truck['id'] %>
+        <%= hidden_field_tag :assigned_date, DateTime.now.to_s %>  <!-- Directly pass assigned_date -->
+        <%= submit_tag 'Assign to this truck', class: 'btn btn-primary' %>
+      <% end %>
 
     </div>
   <% end %>
 
   <div class="pagination">
-    <% if @current_page.to_i > 1 %>
-      <%= link_to 'Previous', trucks_path(page: @current_page.to_i - 1) %>
+    <% if @current_page > 1 %>
+      <%= link_to 'Previous', trucks_path(page: @current_page - 1), class: 'btn btn-secondary' %>
     <% end %>
 
-    <% if @current_page.to_i < @total_pages.to_i %>
-      <%= link_to 'Next', trucks_path(page: @current_page.to_i + 1) %>
+    <% if @current_page < @total_pages %>
+      <%= link_to 'Next', trucks_path(page: @current_page + 1), class: 'btn btn-secondary' %>
     <% end %>
   </div>
+
 <% else %>
   <p>No trucks available.</p>
 <% end %>
+
 <% if flash[:notice] %>
   <div class="alert alert-success">
     <%= flash[:notice] %>
   </div>
 <% end %>
+
+<style>
+  .pagination {
+  margin-top: 20px;
+  text-align: center;
+
+  .btn {
+    margin: 0 5px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+</style>

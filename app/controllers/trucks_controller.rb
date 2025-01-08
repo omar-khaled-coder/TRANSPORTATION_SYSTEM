@@ -4,11 +4,13 @@ class TrucksController < ApplicationController
   before_action :authorize_driver, except: [:index]
   def index
     @driver = current_driver
-    # Corrected query to join drivers_trucks and trucks, ensuring truck_id is included
-    @assigned_trucks = @driver.drivers_trucks.joins(:truck)
-                                         .select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type, drivers_trucks.truck_id')
 
-    # Fetching all trucks from the API
+    # Correct query for assigned trucks
+    @assigned_trucks = @driver.drivers_trucks
+                              .joins(:truck)
+                              .select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type, drivers_trucks.truck_id')
+
+    # Fetching trucks from the API
     url = URI('https://api-task-bfrm.onrender.com/api/v1/trucks')
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true if url.scheme == 'https'
@@ -23,14 +25,24 @@ class TrucksController < ApplicationController
           truck.truck_type = truck_data['truck_type']
         end
       end
-      @trucks = Truck.all
     else
       flash[:alert] = 'Unexpected API response structure.'
-      @trucks = Truck.all
     end
 
+    # Pagination logic
+    per_page = 10
+    @current_page = (params[:page] || 1).to_i
+    @trucks = Truck.order(:created_at)
+                   .offset((@current_page - 1) * per_page)
+                   .limit(per_page)
+
+    total_trucks = Truck.count
+    @total_pages = (total_trucks / per_page.to_f).ceil
+
+    # Driver token
     @driver_token = session[:driver_token] || params[:driver_token]
   end
+
 
 
   def assigned_trucks
