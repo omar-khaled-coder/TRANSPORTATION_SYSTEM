@@ -38,6 +38,11 @@ class DriversController < ApplicationController
     redirect_to root_path, notice: 'Logged out successfully'
   end
 
+  def assigned_trucks
+    # Get the trucks and assigned dates for the current driver
+    @assigned_trucks = Driver.find(current_driver.id).drivers_trucks.includes(:truck).select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type')
+  end
+
   private
 
   def driver_params
