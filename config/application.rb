@@ -15,6 +15,9 @@ module TransportationSystem
       generate.test_framework :test_unit, fixture: false
     end
 
+    # Use Sidekiq as the queue adapter for Active Job
+    config.active_job.queue_adapter = :sidekiq
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 

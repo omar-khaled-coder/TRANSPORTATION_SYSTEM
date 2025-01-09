@@ -1,19 +1,113 @@
 <h2>Login</h2>
 
-<%= form_with url: driver_session_path, method: :post, local: true do |form| %>
-  <div>
-    <%= form.label :email %>
-    <%= form.email_field :email, required: true %>
+<%= form_with url: driver_session_path, method: :post, local: true, class: "login-form" do |form| %>
+  <% if flash[:alert] %>
+    <div class="alert alert-danger">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :email, class: "form-label" %>
+    <%= form.email_field :email, required: true, class: "form-input" %>
   </div>
 
-  <div>
-    <%= form.label :password %>
-    <%= form.password_field :password, required: true %>
+  <div class="form-group">
+    <%= form.label :password, class: "form-label" %>
+    <%= form.password_field :password, required: true, class: "form-input" %>
   </div>
 
-  <div>
-    <%= form.submit 'Login', class: 'btn btn-primary' %>
+  <div class="form-group">
+    <%= form.submit 'Login', class: "btn btn-primary" %>
   </div>
+
+  <p>Don't have an account?</p>
+  <%= link_to 'Sign Up', new_driver_registration_path, class: "link-back" %>
 <% end %>
-<p>Don't have an account?</p>
-<%= link_to 'Sign Up', new_driver_registration_path %>
+
+
+<style>
+  /* General form styling */
+.login-form {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.link-back {
+  display: inline-block;
+  margin-top: 20px;
+  text-decoration: none;
+  color: #007bff;
+  font-size: 1rem;
+}
+
+.link-back:hover {
+  text-decoration: underline;
+}
+
+/* Alert styling */
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert h4 {
+  margin-top: 0;
+  font-weight: bold;
+}
+
+.alert ul {
+  margin-top: 10px;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.alert ul li {
+  margin-bottom: 5px;
+}
+</style>
