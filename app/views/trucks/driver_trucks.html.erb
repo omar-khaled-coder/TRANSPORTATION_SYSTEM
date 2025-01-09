@@ -1,0 +1,68 @@
+<div class="container">
+  <h1>Assigned Trucks</h1>
+
+  <% if @assigned_trucks.any? %>
+    <ul class="assigned-trucks-list">
+      <% @assigned_trucks.each do |drivers_truck| %>
+        <li class="assigned-truck-item">
+          <strong>Truck Name:</strong> <%= drivers_truck.truck.name %>
+          (<%= drivers_truck.truck.truck_type %>)
+          - <strong>Truck ID:</strong> <%= drivers_truck.truck.id %>
+          - <strong>Assigned on:</strong>
+          <%= drivers_truck.assigned_date.present? ? drivers_truck.assigned_date.strftime("%B %d, %Y") : "Not assigned yet" %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>You have no trucks assigned to you.</p>
+  <% end %>
+</div>
+
+<style>
+/* Center the content on the page */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh; /* Full viewport height */
+  text-align: center;
+  padding: 20px;
+}
+
+.assigned-trucks-list {
+  list-style-type: none;
+  padding: 0;
+  max-width: 600px; /* Limit the width of the list */
+  margin: 0 auto; /* Center the list horizontally */
+}
+
+.assigned-truck-item {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.assigned-truck-item strong {
+  color: #333;
+}
+
+.assigned-truck-item:hover {
+  background-color: #f1f1f1;
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+p {
+  font-size: 1.2em;
+  color: #777;
+}
+
+</style>

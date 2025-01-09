@@ -1,4 +1,7 @@
+require 'sidekiq/web'
 Rails.application.routes.draw do
+
+  mount Sidekiq::Web => '/sidekiq'
   root to: "pages#home"
 
   # Health check
@@ -18,4 +21,5 @@ Rails.application.routes.draw do
     post 'assign', on: :member
   end
 
+  get 'driver_trucks', to: 'trucks#driver_trucks', as: 'driver_trucks'
 end

@@ -1,10 +1,12 @@
 class DriversController < ApplicationController
+  before_action :set_driver, only: [:assigned_trucks]
+
   def new
-    # This will render the login form (new.html.erb)
+    # Render the login form (new.html.erb)
   end
 
   def signup
-    # This will render the signup form (signup.html.erb)
+    # Render the signup form (signup.html.erb)
     @driver = Driver.new
   end
 
@@ -13,6 +15,8 @@ class DriversController < ApplicationController
     if @driver.save
       redirect_to new_driver_session_path, notice: 'Signup successful! Please log in.'
     else
+      # Flash the error messages and render the signup page again
+      flash[:alert] = @driver.errors.full_messages.join(', ')
       render :signup
     end
   end
@@ -40,10 +44,15 @@ class DriversController < ApplicationController
 
   def assigned_trucks
     # Get the trucks and assigned dates for the current driver
-    @assigned_trucks = Driver.find(current_driver.id).drivers_trucks.includes(:truck).select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type')
+    @assigned_trucks = @driver.drivers_trucks.includes(:truck).select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type')
   end
 
   private
+
+  def set_driver
+    # Fetch the driver based on the current session or driver ID
+    @driver = Driver.find(session[:driver_id])
+  end
 
   def driver_params
     params.require(:driver).permit(:email, :password, :password_confirmation)

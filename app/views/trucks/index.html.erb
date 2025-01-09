@@ -1,45 +1,38 @@
-<h1>Assigned Trucks</h1>
-
-<% if @assigned_trucks.any? %>
-  <ul>
-    <% @assigned_trucks.each do |drivers_truck| %>
-      <li>
-        <%= drivers_truck.truck.name %> (<%= drivers_truck.truck.truck_type %>) - Assigned on:
-        <%= drivers_truck.assigned_date.present? ? drivers_truck.assigned_date.strftime("%B %d, %Y") : "Not assigned yet" %>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>You have no trucks assigned to you.</p>
-<% end %>
-
-
-<h1>All Trucks</h1>
+<h1 class="page-title">All Trucks</h1>
 
 <% if @trucks.present? %>
-  <% @trucks.each do |truck| %>
-    <div class="truck">
-      <h2><%= truck['name'] %></h2>
-      <p>Type: <%= truck['truck_type'] %></p>
+  <div class="trucks-grid">
+    <% @trucks.each do |truck| %>
+      <div class="truck-card">
+        <h2 class="truck-name">Truck ID: <%= truck['id'] %></h2>
+        <h3 class="truck-title"><%= truck['name'] %></h3>
+        <p class="truck-type">Type: <%= truck['truck_type'] %></p>
 
-      <% if truck['image_url'].present? %>
-        <img src="<%= truck['image_url'] %>" alt="<%= truck['name'] %> image" />
-      <% else %>
-        <p>No image available</p>
-      <% end %>
+        <% if truck['image_url'].present? %>
+          <div class="truck-image">
+            <img src="<%= truck['image_url'] %>" alt="<%= truck['name'] %> image" />
+          </div>
+        <% else %>
+          <p class="no-image">No image available</p>
+        <% end %>
 
-      <p>Created at: <%= truck['created_at'] %></p>
-      <p>Updated at: <%= truck['updated_at'] %></p>
+        <p class="truck-date">Created at: <%= truck['created_at'].strftime('%B %d, %Y') %></p>
+        <p class="truck-date">Updated at: <%= truck['updated_at'].strftime('%B %d, %Y') %></p>
 
-      <%= form_with url: assign_truck_path(truck['id']), method: :post, local: true do %>
-        <%= hidden_field_tag :driver_token, session[:driver_token] %>
-        <%= hidden_field_tag :truck_id, truck['id'] %>
-        <%= hidden_field_tag :assigned_date, DateTime.now.to_s %>  <!-- Directly pass assigned_date -->
-        <%= submit_tag 'Assign to this truck', class: 'btn btn-primary' %>
-      <% end %>
-
-    </div>
+       <% if DriversTruck.exists?(truck_id: truck['id'], driver_id: current_driver.id) %>
+  <p class="already-assigned-message">You are already assigned to this truck.</p>
+<% else %>
+  <%= form_with url: assign_truck_path(truck['id']), method: :post, local: true do %>
+    <%= hidden_field_tag :driver_token, session[:driver_token] %>
+    <%= hidden_field_tag :truck_id, truck['id'] %>
+    <%= hidden_field_tag :assigned_date, DateTime.now.to_s %>
+    <%= submit_tag 'Assign to this truck', class: 'btn btn-dark' %>
   <% end %>
+<% end %>
+
+      </div>
+    <% end %>
+  </div>
 
   <div class="pagination">
     <% if @current_page > 1 %>
@@ -50,9 +43,8 @@
       <%= link_to 'Next', trucks_path(page: @current_page + 1), class: 'btn btn-secondary' %>
     <% end %>
   </div>
-
 <% else %>
-  <p>No trucks available.</p>
+  <p class="no-trucks-message">No trucks available.</p>
 <% end %>
 
 <% if flash[:notice] %>
@@ -62,22 +54,134 @@
 <% end %>
 
 <style>
-  .pagination {
-  margin-top: 20px;
-  text-align: center;
+  /* General Styling */
+  body {
+    background-color: #f4f4f4;
+    font-family: 'Arial', sans-serif;
+  }
 
+  .page-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 32px;
+    color: #333;
+  }
+
+  /* Trucks Grid Styling */
+  .trucks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+
+  /* Truck Card Styling */
+  .truck-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .truck-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .truck-title {
+    font-size: 24px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  .truck-type {
+    font-size: 18px;
+    color: #777;
+  }
+
+  .truck-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+
+  .no-image {
+    color: #999;
+    font-style: italic;
+    margin-top: 12px;
+  }
+
+  .truck-date {
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+  }
+
+  /* Button Styling */
   .btn {
-    margin: 0 5px;
-    padding: 8px 12px;
-    background-color: #007bff;
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 16px;
+    font-size: 16px;
     color: #fff;
+    background-color: #333;
     border: none;
     border-radius: 4px;
+    cursor: pointer;
     text-decoration: none;
+  }
 
-    &:hover {
-      background-color: #0056b3;
+  .btn:hover {
+    background-color: #000;
+  }
+
+  .btn-secondary {
+    background-color: #555;
+  }
+
+  .btn-secondary:hover {
+    background-color: #333;
+  }
+
+  /* Pagination Styling */
+  .pagination {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  /* Flash Message Styling */
+  .alert-success {
+    margin: 20px;
+    padding: 15px;
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+  }
+
+  .already-assigned-message {
+  color: #721c24;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+
+  /* Responsive Styling */
+  @media (max-width: 768px) {
+    .truck-card {
+      padding: 12px;
+    }
+
+    .truck-name {
+      font-size: 18px;
+    }
+
+    .truck-title {
+      font-size: 20px;
     }
   }
-}
 </style>

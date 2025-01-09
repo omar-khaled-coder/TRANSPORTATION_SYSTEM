@@ -43,6 +43,15 @@ class TrucksController < ApplicationController
     @driver_token = session[:driver_token] || params[:driver_token]
   end
 
+  def driver_trucks
+    @driver = current_driver
+
+    # Correct query for assigned trucks
+    @assigned_trucks = @driver.drivers_trucks
+                              .joins(:truck)
+                              .select('drivers_trucks.assigned_date, trucks.name, trucks.truck_type, drivers_trucks.truck_id')
+
+  end
 
 
   def assigned_trucks

@@ -74,9 +74,29 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+
+# Gem for securely handling password hashing
+# 'bcrypt' is used to encrypt passwords before storing them in the database.
 gem 'bcrypt', '~> 3.1.7'
+
+# Gem for handling JSON Web Tokens (JWT)
+# 'jwt' is used for creating and verifying JSON Web Tokens for user authentication and API security.
 gem 'jwt'
+
+# Background job processing gem
+# 'sidekiq' is used for asynchronous job processing. It helps in performing long-running tasks (e.g., sending emails, image processing) in the background.
 gem 'sidekiq'
+
+# Pagination gem for efficient navigation through large datasets
+# 'pagy' is a lightweight and high-performance pagination library for Ruby on Rails.
 gem 'pagy'
+
+# Gem for scheduling recurring tasks
+# 'whenever' is used to define cron jobs in a clear and easy-to-manage Ruby syntax.
+# The 'require: false' option prevents loading the gem during runtime (useful for cron job configuration).
 gem 'whenever', require: false
+
+# Gem for serializing JSON:API compliant responses
+# 'jsonapi-serializer' helps in formatting and serializing your Ruby objects to comply with the JSON:API specification.
 gem 'jsonapi-serializer'
